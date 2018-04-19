@@ -1,0 +1,248 @@
+{
+  "namespaces": [
+    "n1",
+    "n2"
+  ],
+  "serviceAccounts": [
+    {
+      "name": "test1",
+      "namespace": "n1",
+      "tests": [
+        {
+          "path": "/api/v1/namespaces/n1/pods",
+          "description": "Check pod-reader-n1-test1 binding",
+          "expectedCode": 200
+        },
+        {
+          "path": "/api/v1/pods",
+          "expectedCode": 403
+        },
+        {
+          "path": "/api/v1/namespaces/n2/pods",
+          "description": "Check pod-reader-n2-test1 binding",
+          "expectedCode": 200
+        },
+        {
+          "path": "/api/v1/namespaces/n2/services",
+          "description": "Check service-reader-n2-authenticated binding",
+          "expectedCode": 200
+        }
+      ]
+    },
+    {
+      "name": "test2",
+      "namespace": "n1",
+      "tests": [
+        {
+          "path": "/api/v1/namespaces/n1/pods",
+          "expectedCode": 200
+        },
+        {
+          "path": "/api/v1/pods",
+          "descirption": "Check pod-reader-cluster-test2 cluster role binding",
+          "expectedCode": 200
+        },
+        {
+          "path": "/api/v1/namespaces/n2/services",
+          "expectedCode": 200
+        }
+      ]
+    },
+    {
+      "name": "test3",
+      "namespace": "n1",
+      "tests": [
+        {
+          "path": "/api/v1/namespaces/n1/pods",
+          "expectedCode": 403
+        },
+        {
+          "path": "/api/v1/pods",
+          "expectedCode": 403
+        },
+        {
+          "path": "/api/v1/namespaces/n2/services",
+          "expectedCode": 200
+        }
+      ]
+    },
+    {
+      "name": "test4",
+      "namespace": "n1",
+      "tests": [
+        {
+          "path": "/api/v1/namespaces/n1/pods",
+          "expectedCode": 403
+        },
+        {
+          "path": "/api/v1/pods",
+          "expectedCode": 403
+        },
+        {
+          "path": "/api/v1/namespaces/n2/services",
+          "expectedCode": 200
+        }
+      ]
+    },
+    {
+      "name": "test5",
+      "namespace": "n1",
+      "tests": [
+        {
+          "path": "/api/v1/namespaces/n1/pods",
+          "expectedCode": 403
+        },
+        {
+          "path": "/api/v1/pods",
+          "expectedCode": 403
+        },
+        {
+          "path": "/api/v1/namespaces/n2/services",
+          "expectedCode": 200
+        }
+      ]
+    }
+  ],
+  "roles": [
+    {
+      "name": "pod-reader-n1",
+      "namespace": "n1",
+      "rules": [
+        {
+          "resources": [
+            "pods"
+          ],
+          "verbs": [
+            "get",
+            "list"
+          ],
+          "apiGroups": [
+            ""
+          ]
+        }
+      ]
+    },
+    {
+      "name": "service-reader-n2",
+      "namespace": "n2",
+      "rules": [
+        {
+          "resources": [
+            "services"
+          ],
+          "verbs": [
+            "get",
+            "list"
+          ],
+          "apiGroups": [
+            ""
+          ]
+        }
+      ]
+    },
+    {
+      "name": "pod-reader-n2",
+      "namespace": "n2",
+      "rules": [
+        {
+          "resources": [
+            "pods"
+          ],
+          "verbs": [
+            "get",
+            "list"
+          ],
+          "apiGroups": [
+            ""
+          ]
+        }
+      ]
+    }
+  ],
+  "clusterRoles": [
+    {
+      "name": "pod-reader-cluster",
+      "rules": [
+        {
+          "resources": [
+            "pods"
+          ],
+          "verbs": [
+            "get",
+            "list"
+          ],
+          "apiGroups": [
+            ""
+          ]
+        }
+      ]
+    }
+  ],
+  "roleBindings": [
+    {
+      "name": "pod-reader-n1-test1",
+      "namespace": "n1",
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "namespace": "n1",
+          "name": "test1"
+        }
+      ],
+      "role": {
+        "kind": "Role",
+        "name": "pod-reader-n1",
+        "apiGroup": "rbac.authorization.k8s.io"
+      }
+    },
+    {
+      "name": "pod-reader-n2-test1",
+      "namespace": "n2",
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "namespace": "n1",
+          "name": "test1"
+        }
+      ],
+      "role": {
+        "kind": "Role",
+        "name": "pod-reader-n2",
+        "apiGroup": "rbac.authorization.k8s.io"
+      }
+    },
+    {
+      "name": "service-reader-n2-authenticated",
+      "namespace": "n2",
+      "subjects": [
+        {
+          "kind": "Group",
+          "name": "system:authenticated",
+          "apiGroup": "rbac.authorization.k8s.io"
+        }
+      ],
+      "role": {
+        "kind": "Role",
+        "name": "service-reader-n2",
+        "apiGroup": "rbac.authorization.k8s.io"
+      }
+    }
+  ],
+  "clusterRoleBindings": [
+    {
+      "name": "pod-reader-cluster-test2",
+      "subjects": [
+        {
+          "kind": "ServiceAccount",
+          "namespace": "n1",
+          "name": "test2"
+        }
+      ],
+      "role": {
+        "kind": "ClusterRole",
+        "name": "pod-reader-cluster",
+        "apiGroup": "rbac.authorization.k8s.io"
+      }
+    }
+  ]
+}
